@@ -1,10 +1,6 @@
 # depslib dependency file v1.0
-1445971293 source:/home/gaber/Desktop/threads/main.c
+1445976229 source:/home/gaber/Desktop/threads/main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
-	<unistd.h>
-	<sys/wait.h>
-	<stdbool.h>
-	<memory.h>
 

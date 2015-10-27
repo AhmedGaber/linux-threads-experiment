@@ -5,9 +5,9 @@
 #define MAX_MATRIX_SIZE 500
 #define TOKEN_DELIM " \t\r\n\a"
 
-int a[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
-int b[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
-int c[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
+float a[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
+float b[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
+float c[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
 int a_dimensions[2];  // [0] --> x dimension, [1] --> y dimension
 int b_dimensions[2];
 int c_dimensions[2];
@@ -29,7 +29,8 @@ int main()
 
 void run()
 {
-  char **files = get_files_list();
+    char **files = get_files_list();
+
 }
 
 /**
@@ -51,26 +52,30 @@ int write_matrix_to_file(char *file_name)
 /**
   Reads file names from user, and return all in and out file names
 */
-char **get_files_list(){
-  char *line = read_line();
-  char **files = parse_line(line);
+char **get_files_list()
+{
+    char *line = read_line();
+    char **files = parse_line(line);
 
-  if (strcmp(files[0], "") == 0){
-    files[1] = "a.txt";
-    files[2] = "b.txt";
-    files[3] = "c.out";
-  }
-  else if (strcmp(files[1], "") == 0){
-    files[1] = connect_strings(files[0], "a.txt");
-    files[2] = connect_strings(files[0], "b.txt");
-    files[3] = connect_strings(files[0], "c.out");
-  }
-  else{
-    files[1] = connect_strings(files[0], files[1]);
-    files[2] = connect_strings(files[0], files[2]);
-    files[3] = connect_strings(files[0], files[3]);
-  }
-  return files;
+    if (strcmp(files[0], "") == 0)
+    {
+        files[1] = "a.txt";
+        files[2] = "b.txt";
+        files[3] = "c.out";
+    }
+    else if (strcmp(files[1], "") == 0)
+    {
+        files[1] = connect_strings(files[0], "a.txt");
+        files[2] = connect_strings(files[0], "b.txt");
+        files[3] = connect_strings(files[0], "c.out");
+    }
+    else
+    {
+        files[1] = connect_strings(files[0], files[1]);
+        files[2] = connect_strings(files[0], files[2]);
+        files[3] = connect_strings(files[0], files[3]);
+    }
+    return files;
 }
 
 /**
@@ -78,7 +83,16 @@ char **get_files_list(){
 */
 char *read_line()
 {
-  char *line = malloc(sizeof(char) * 200);
+    char *line = malloc(sizeof(char) * 200);
+    int current = 0;
+    char c;
+    c = getc(stdin);
+    while (c != '\n'){
+      line[current++] = c;
+      c = getc(stdin);
+    }
+    line[current] = '\0';
+    return line;
 }
 
 /**
