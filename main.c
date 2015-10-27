@@ -13,8 +13,8 @@ int b_dimensions[2];
 int c_dimensions[2];
 
 void run();
-int read_matrix_from_file(char *file_name, int mat_num);
-int write_matrix_to_file(char *file_name);
+void read_matrix_from_file(char *file_name, int mat_num);
+void write_matrix_to_file(char *file_name);
 char **get_files_list();
 char *read_line();
 char* connect_strings(char *s1, char *s2);
@@ -30,23 +30,65 @@ int main()
 void run()
 {
     char **files = get_files_list();
-
+    read_matrix_from_file(files[1], 1);
+    read_matrix_from_file(files[2], 2);
+    // check if the matrices is valid
+    // do the calculation here.
+    write_matrix_to_file(files[3]);
 }
 
 /**
   Reads a matrix from file
 */
-int read_matrix_from_file(char *file_name, int mat_num)
+void read_matrix_from_file(char *file_name, int mat_num)
 {
+    FILE *file = fopen(file_name, "r");
+    int length, width, i, j;
+    fscanf(file, "%d", &length);
+    fscanf(file, "%d", &width);
 
+    if(mat_num == 1)
+    {
+        a_dimensions[0] = length;
+        a_dimensions[1] = width;
+    }
+    else
+    {
+        b_dimensions[0] = length;
+        b_dimensions[1] = width;
+    }
+
+    for(i = 0; i < length; i++)
+    {
+        for(j = 0; j< width; j++)
+        {
+            float in;
+            fscanf(file, "%f", &in);
+            mat_num == 1 ? (a[i][j] = in) : (b[i][j] = in);
+        }
+    }
+    fclose(file);
 }
 
 /**
   Writes a matrix to file
 */
-int write_matrix_to_file(char *file_name)
+void write_matrix_to_file(char *file_name)
 {
+    int i, j;
+    FILE *file = fopen(file_name, "w");
+    fprintf(file,"%d %d\n",c_dimensions[0], c_dimensions[1]);
 
+    for(i = 0; i < c_dimensions[0]; i++)
+    {
+        for(j = 0; j< c_dimensions[1]; j++)
+        {
+            fprintf(file, "%f ", c[i][j]);
+        }
+        fprintf(file, "\n");
+    }
+
+    fclose(file);
 }
 
 /**
@@ -87,9 +129,10 @@ char *read_line()
     int current = 0;
     char c;
     c = getc(stdin);
-    while (c != '\n'){
-      line[current++] = c;
-      c = getc(stdin);
+    while (c != '\n')
+    {
+        line[current++] = c;
+        c = getc(stdin);
     }
     line[current] = '\0';
     return line;
