@@ -193,14 +193,12 @@ char **parse_line(char *line)
 void calculate_element_by_element()
 {
     printf("Calculating matrix element by element...\n");
-
     int i,j;
 
     for(i = 0; i < c_dimensions[0]; i++)   // rows
     {
         for(j = 0; j < c_dimensions[1]; j++)   // columns
         {
-
             struct cell *index = (struct cell *) malloc(sizeof(struct cell));
             index->i = i;
             index->j = j;
@@ -221,28 +219,57 @@ void calculate_element_by_element()
 void calculate_row_by_row()
 {
     printf("Calculating matrix row by row...\n");
+    int i;
+
+    for(i = 0; i < c_dimensions[0]; i++)   // rows
+    {
+        pthread_t tid;       //Thread ID
+        pthread_attr_t attr; //thread attributes
+
+        pthread_attr_init(&attr);
+        pthread_create(&tid, &attr, elements_calculation_thread, (void *)i);
+
+        //parent should wait for all thread to complete
+        pthread_join(tid, NULL);
+        num_of_threads_in_row_calculation++;
+    }
 }
 
 void *elements_calculation_thread(void *cell)
 {
-   struct cell *current_cell = cell;
-   int k;
-   float sum = 0.0;
+    struct cell *current_cell = cell;
+    int k;
+    float sum = 0.0;
 
-   //multiply row by column
-   for(k = 0; k< a_dimensions[1]; k++){
-      sum += a[current_cell->i][k] * b[k][current_cell->j] * 1.0;
-   }
+    //multiply row by column
+    for(k = 0; k< a_dimensions[1]; k++)
+    {
+        sum += a[current_cell->i][k] * b[k][current_cell->j] * 1.0;
+    }
 
-   // set the value to it's index
-   c[current_cell->i][current_cell->j] = sum;
+    // set the value to it's index
+    c[current_cell->i][current_cell->j] = sum;
 
-   pthread_exit(0);
+    pthread_exit(0);
 }
 
 void *rows_calculation_thread(void *row)
 {
+    int i, j, k;
+    float sum = 0.0;
 
+    //multiply row by column
+    for(i = 0; i < c_dimensions[1]; i++)
+    {
+        for(j = 0; j< a_dimensions[1]; j++)
+        {
+            sum += a[(int)row][j] * b[j][i] * 1.0;
+        }
+        // set the value to it's index
+        c[(int)row][i] = sum;
+    }
+
+    pthread_exit(0);
 }
 
 void print_statistics()

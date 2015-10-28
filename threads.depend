@@ -1,6 +1,7 @@
 # depslib dependency file v1.0
-1445976229 source:/home/gaber/Desktop/threads/main.c
+1446061332 source:/home/gaber/Desktop/threads/main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
+	<pthread.h>
 
