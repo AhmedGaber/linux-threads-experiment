@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 #define MAX_MATRIX_SIZE 500
 #define TOKEN_DELIM " \t\r\n\a"
@@ -11,6 +12,7 @@ float c[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
 int a_dimensions[2];  // [0] --> x dimension, [1] --> y dimension
 int b_dimensions[2];
 int c_dimensions[2];
+int num_of_threads = 0;
 
 void run();
 void read_matrix_from_file(char *file_name, int mat_num);
@@ -19,6 +21,11 @@ char **get_files_list();
 char *read_line();
 char* connect_strings(char *s1, char *s2);
 char **parse_line(char *line);
+void calculate_element_by_element();
+void calculate_row_by_row();
+void *elements_calculation_thread(void *cell);
+void *rows_calculation_thread(void *row);
+void print_statistics();
 
 int main()
 {
@@ -33,7 +40,10 @@ void run()
     read_matrix_from_file(files[1], 1);
     read_matrix_from_file(files[2], 2);
     // check if the matrices is valid
-    // do the calculation here.
+
+    calculate_element_by_element();
+    calculate_row_by_row();
+    print_statistics();
     write_matrix_to_file(files[3]);
 }
 
@@ -170,3 +180,22 @@ char **parse_line(char *line)
     return tokens;
 }
 
+void calculate_element_by_element(){
+
+}
+
+void calculate_row_by_row(){
+
+}
+
+void *elements_calculation_thread(void *cell){
+
+}
+
+void *rows_calculation_thread(void *row){
+
+}
+
+void print_statistics(){
+
+}
