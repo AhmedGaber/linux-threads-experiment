@@ -50,8 +50,8 @@ void run()
     c_dimensions[1] = b_dimensions[1];
     // check if the matrices is valid
 
-    calculate_element_by_element();
-  //  calculate_row_by_row();
+//   calculate_element_by_element();
+    calculate_row_by_row();
     print_statistics();
     write_matrix_to_file(files[3]);
 }
@@ -127,14 +127,14 @@ char **get_files_list()
         files[2] = "b.txt";
         files[3] = "c.out";
     }
-/*    else if (files[1] == NULL)
-    {
-        printf("lknj");
-        files[1] = connect_strings(files[0], "a.txt");
-        files[2] = connect_strings(files[0], "b.txt");
-        files[3] = connect_strings(files[0], "c.out");
-    }
-*/
+    /*    else if (files[1] == NULL)
+        {
+            printf("lknj");
+            files[1] = connect_strings(files[0], "a.txt");
+            files[2] = connect_strings(files[0], "b.txt");
+            files[3] = connect_strings(files[0], "c.out");
+        }
+    */
     else
     {
         files[1] = connect_strings(files[0], files[1]);
@@ -231,7 +231,7 @@ void calculate_row_by_row()
         pthread_attr_t attr; //thread attributes
 
         pthread_attr_init(&attr);
-        pthread_create(&tid, &attr, elements_calculation_thread, (void *)i);
+        pthread_create(&tid, &attr, rows_calculation_thread, (void *)i);
 
         //parent should wait for all thread to complete
         pthread_join(tid, NULL);
@@ -259,18 +259,19 @@ void *elements_calculation_thread(void *cell)
 
 void *rows_calculation_thread(void *row)
 {
-    int i, j, k;
+    int i = (int)row, j, k;
     float sum = 0.0;
 
     //multiply row by column
-    for(i = 0; i < c_dimensions[1]; i++)
+    for(j = 0; j < c_dimensions[1]; j++)
     {
-        for(j = 0; j< a_dimensions[1]; j++)
+        sum = 0;
+        for(k = 0; k < a_dimensions[1]; k++)
         {
-            sum += a[(int)row][j] * b[j][i] * 1.0;
+            sum += a[i][k] * b[k][j] * 1.0;
         }
         // set the value to it's index
-        c[(int)row][i] = sum;
+        c[i][j] = sum;
     }
 
     pthread_exit(0);
