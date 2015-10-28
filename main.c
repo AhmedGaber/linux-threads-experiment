@@ -12,7 +12,8 @@ float c[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
 int a_dimensions[2];  // [0] --> x dimension, [1] --> y dimension
 int b_dimensions[2];
 int c_dimensions[2];
-int num_of_threads = 0;
+int num_of_threads_in_element_calculation = 0;
+int num_of_threads_in_row_calculation = 0;
 
 void run();
 void read_matrix_from_file(char *file_name, int mat_num);
@@ -26,6 +27,11 @@ void calculate_row_by_row();
 void *elements_calculation_thread(void *cell);
 void *rows_calculation_thread(void *row);
 void print_statistics();
+
+struct cell {
+   int i; // row
+   int j; // column
+};
 
 int main()
 {
@@ -59,11 +65,13 @@ void read_matrix_from_file(char *file_name, int mat_num)
 
     if(mat_num == 1)
     {
+        printf("Reading first matrix...\n");
         a_dimensions[0] = length;
         a_dimensions[1] = width;
     }
     else
     {
+        printf("Reading second matrix...\n");
         b_dimensions[0] = length;
         b_dimensions[1] = width;
     }
@@ -85,6 +93,7 @@ void read_matrix_from_file(char *file_name, int mat_num)
 */
 void write_matrix_to_file(char *file_name)
 {
+    printf("Writing matrix to the output file...\n")
     int i, j;
     FILE *file = fopen(file_name, "w");
     fprintf(file,"%d %d\n",c_dimensions[0], c_dimensions[1]);
@@ -181,11 +190,11 @@ char **parse_line(char *line)
 }
 
 void calculate_element_by_element(){
-
+  printf("Calculating matrix element by element...\n");
 }
 
 void calculate_row_by_row(){
-
+  printf("Calculating matrix row by row...\n");
 }
 
 void *elements_calculation_thread(void *cell){
