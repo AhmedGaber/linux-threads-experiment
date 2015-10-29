@@ -18,10 +18,12 @@ int num_of_threads_in_row_calculation = 0;
 unsigned long without_threads_calculation_time = 0;
 unsigned long elements_calculation_time = 0;
 unsigned long rows_calculation_time = 0;
+int error_flag = 0;
 
 void run();
 void read_matrix_from_file(char *file_name, int mat_num);
 void write_matrix_to_file(char *file_name);
+void post_read();
 char **get_files_list();
 char *read_line();
 char* connect_strings(char *s1, char *s2);
@@ -42,6 +44,10 @@ struct cell
 int main()
 {
     run();
+
+    if(error_flag == 1)
+        return EXIT_FAILURE;
+
     return EXIT_SUCCESS;
 }
 
@@ -49,11 +55,18 @@ int main()
 void run()
 {
     char **files = get_files_list();
+
     read_matrix_from_file(files[1], 1);
+    if (error_flag == 1)
+        return;
+
     read_matrix_from_file(files[2], 2);
-    c_dimensions[0] = a_dimensions[0];
-    c_dimensions[1] = b_dimensions[1];
-    // check if the matrices is valid
+    if (error_flag == 1)
+        return;
+
+    post_read();
+    if (error_flag == 1)
+        return;
 
     calculate_without_threads();
     calculate_element_by_element();
@@ -68,7 +81,15 @@ void run()
 void read_matrix_from_file(char *file_name, int mat_num)
 {
     FILE *file = fopen(file_name, "r");
+    if(!file)
+    {
+        error_flag = 1;
+        perror("Can't find the input file. Terminating...\n");
+        return;
+    }
+
     int length, width, i, j;
+    float in;
     fscanf(file, "%d", &length);
     fscanf(file, "%d", &width);
 
@@ -87,10 +108,14 @@ void read_matrix_from_file(char *file_name, int mat_num)
 
     for(i = 0; i < length; i++)
     {
-        for(j = 0; j< width; j++)
+        for(j = 0; j < width; j++)
         {
-            float in;
             fscanf(file, "%f", &in);
+            if(in == EOF){
+              error_flag = 1;
+              perror("Can't find all the matrix element, please check the input file again.\n");
+              return;
+            }
             mat_num == 1 ? (a[i][j] = in) : (b[i][j] = in);
         }
     }
@@ -117,6 +142,18 @@ void write_matrix_to_file(char *file_name)
     }
 
     fclose(file);
+}
+
+void post_read()
+{
+    if(a_dimensions[1] != b_dimensions[0])
+    {
+        error_flag = 1;
+        perror("Number of columns of first matrix is not equle number of rows of the second one, can't multiply those two matrices.\n");
+        return;
+    }
+    c_dimensions[0] = a_dimensions[0];
+    c_dimensions[1] = b_dimensions[1];
 }
 
 /**
@@ -252,7 +289,7 @@ void calculate_element_by_element()
             pthread_create(&tid, &attr, elements_calculation_thread, index);
 
             //parent should wait for all thread to complete
-            pthread_join(tid, NULL);
+            //pthread_join(tid, NULL);
             num_of_threads_in_element_calculation++;
         }
     }
@@ -279,7 +316,7 @@ void calculate_row_by_row()
         pthread_create(&tid, &attr, rows_calculation_thread, (void *)i);
 
         //parent should wait for all thread to complete
-        pthread_join(tid, NULL);
+        //pthread_join(tid, NULL);
         num_of_threads_in_row_calculation++;
     }
 
