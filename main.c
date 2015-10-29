@@ -5,7 +5,6 @@
 #include <sys/time.h>
 #include "parser.h"
 
-
 #define MAX_MATRIX_SIZE 500
 
 float a[MAX_MATRIX_SIZE][MAX_MATRIX_SIZE];
@@ -148,7 +147,7 @@ void write_matrix_to_file(char *file_name)
 }
 
 /**
-  Check if the two matrices multiplication is valid, and assign the dimintoins to c matrix
+  Check if the two matrices multiplication is valid, and assign the dimensions to c matrix
 */
 void post_read()
 {
