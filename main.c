@@ -15,6 +15,7 @@ int c_dimensions[2];
 int num_of_threads_in_element_calculation = 0;
 int num_of_threads_in_row_calculation = 0;
 
+
 void run();
 void read_matrix_from_file(char *file_name, int mat_num);
 void write_matrix_to_file(char *file_name);
@@ -22,6 +23,7 @@ char **get_files_list();
 char *read_line();
 char* connect_strings(char *s1, char *s2);
 char **parse_line(char *line);
+void calculate_without_threads();
 void calculate_element_by_element();
 void calculate_row_by_row();
 void *elements_calculation_thread(void *cell);
@@ -50,7 +52,8 @@ void run()
     c_dimensions[1] = b_dimensions[1];
     // check if the matrices is valid
 
-//   calculate_element_by_element();
+    calculate_without_threads();
+    calculate_element_by_element();
     calculate_row_by_row();
     print_statistics();
     write_matrix_to_file(files[3]);
@@ -192,6 +195,27 @@ char **parse_line(char *line)
     }
     tokens[current] = NULL;
     return tokens;
+}
+
+void calculate_without_threads()
+{
+    printf("Calculating matrix without threads...\n");
+    int i, j, k;
+    float sum = 0.0;
+
+    for(i = 0; i < c_dimensions[0]; i++)   // rows
+    {
+        for(j = 0; j < c_dimensions[1]; j++)   // columns
+        {
+            sum = 0.0;
+            for(k = 0; k < a_dimensions[1]; k++) //multiply row by column
+            {
+                sum += a[i][k] * b[k][j] * 1.0;
+            }
+            // set the value to it's index
+            c[i][j] = sum;
+        }
+    }
 }
 
 void calculate_element_by_element()
