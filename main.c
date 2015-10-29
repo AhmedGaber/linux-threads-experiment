@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+#include <sys/time.h>
 
 #define MAX_MATRIX_SIZE 500
 #define TOKEN_DELIM " \t\r\n\a"
@@ -14,7 +15,9 @@ int b_dimensions[2];
 int c_dimensions[2];
 int num_of_threads_in_element_calculation = 0;
 int num_of_threads_in_row_calculation = 0;
-
+unsigned long without_threads_calculation_time = 0;
+unsigned long elements_calculation_time = 0;
+unsigned long rows_calculation_time = 0;
 
 void run();
 void read_matrix_from_file(char *file_name, int mat_num);
@@ -55,8 +58,8 @@ void run()
     calculate_without_threads();
     calculate_element_by_element();
     calculate_row_by_row();
-    print_statistics();
     write_matrix_to_file(files[3]);
+    print_statistics();
 }
 
 /**
@@ -200,6 +203,10 @@ char **parse_line(char *line)
 void calculate_without_threads()
 {
     printf("Calculating matrix without threads...\n");
+
+    struct timeval stop, start;
+    gettimeofday(&start, NULL); //start checking time
+
     int i, j, k;
     float sum = 0.0;
 
@@ -216,11 +223,18 @@ void calculate_without_threads()
             c[i][j] = sum;
         }
     }
+
+    gettimeofday(&stop, NULL); //end checking time
+    without_threads_calculation_time =  stop.tv_usec - start.tv_usec;
 }
 
 void calculate_element_by_element()
 {
     printf("Calculating matrix element by element...\n");
+
+    struct timeval stop, start;
+    gettimeofday(&start, NULL); //start checking time
+
     int i,j;
 
     for(i = 0; i < c_dimensions[0]; i++)   // rows
@@ -242,11 +256,18 @@ void calculate_element_by_element()
             num_of_threads_in_element_calculation++;
         }
     }
+
+    gettimeofday(&stop, NULL); //end checking time
+    elements_calculation_time =  stop.tv_usec - start.tv_usec;
 }
 
 void calculate_row_by_row()
 {
     printf("Calculating matrix row by row...\n");
+
+    struct timeval stop, start;
+    gettimeofday(&start, NULL); //start checking time
+
     int i;
 
     for(i = 0; i < c_dimensions[0]; i++)   // rows
@@ -261,6 +282,9 @@ void calculate_row_by_row()
         pthread_join(tid, NULL);
         num_of_threads_in_row_calculation++;
     }
+
+    gettimeofday(&stop, NULL); //end checking time
+    rows_calculation_time =  stop.tv_usec - start.tv_usec;
 }
 
 void *elements_calculation_thread(void *cell)
