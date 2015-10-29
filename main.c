@@ -327,5 +327,12 @@ void *rows_calculation_thread(void *row)
 
 void print_statistics()
 {
+    printf("\nFinal Statestics...\n\n");
 
+    printf("Calculation without threads took: %lu microseconds.\n", without_threads_calculation_time);
+    printf("Calculating element by element took: %lu microseconds.\n", elements_calculation_time);
+    printf("Calculating row by row took: %lu microseconds.\n\n", rows_calculation_time);
+
+    printf("Number of threads created during element by element calculation: %d\n", num_of_threads_in_element_calculation);
+    printf("Number of threads created during row by row calculation: %d\n", num_of_threads_in_row_calculation);
 }
