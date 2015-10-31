@@ -113,10 +113,11 @@ void read_matrix_from_file(char *file_name, int mat_num)
         for(j = 0; j < width; j++)
         {
             fscanf(file, "%f", &in);
-            if(in == EOF){
-              error_flag = 1;
-              perror("Can't find all the matrix element, please check the input file again.\n");
-              return;
+            if(in == EOF)
+            {
+                error_flag = 1;
+                perror("Can't find all the matrix element, please check the input file again.\n");
+                return;
             }
             mat_num == 1 ? (a[i][j] = in) : (b[i][j] = in);
         }
@@ -203,6 +204,7 @@ void calculate_element_by_element()
     gettimeofday(&start, NULL); //start checking time
 
     int i,j;
+    pthread_t threads_ids[c_dimensions[0] * c_dimensions[1]];
 
     for(i = 0; i < c_dimensions[0]; i++)   // rows
     {
@@ -217,11 +219,14 @@ void calculate_element_by_element()
 
             pthread_attr_init(&attr);
             pthread_create(&tid, &attr, elements_calculation_thread, index);
-
-            //parent should wait for all thread to complete
-            //pthread_join(tid, NULL);
-            num_of_threads_in_element_calculation++;
+            threads_ids[num_of_threads_in_element_calculation++] = tid;
         }
+    }
+
+    //parent should wait for all thread to complete
+    for (i = 0; i< num_of_threads_in_element_calculation; i++)
+    {
+        pthread_join(threads_ids[i], NULL);
     }
 
     gettimeofday(&stop, NULL); //end checking time
@@ -239,6 +244,7 @@ void calculate_row_by_row()
     gettimeofday(&start, NULL); //start checking time
 
     int i;
+    pthread_t threads_ids[c_dimensions[0]];
 
     for(i = 0; i < c_dimensions[0]; i++)   // rows
     {
@@ -247,12 +253,15 @@ void calculate_row_by_row()
 
         pthread_attr_init(&attr);
         pthread_create(&tid, &attr, rows_calculation_thread, (void *)i);
+        threads_ids[num_of_threads_in_row_calculation++] = tid;
 
-        //parent should wait for all thread to complete
-        //pthread_join(tid, NULL);
-        num_of_threads_in_row_calculation++;
     }
 
+    //parent should wait for all thread to complete
+    for (i = 0; i< num_of_threads_in_row_calculation; i++)
+    {
+        pthread_join(threads_ids[i], NULL);
+    }
     gettimeofday(&stop, NULL); //end checking time
     rows_calculation_time =  stop.tv_usec - start.tv_usec;
 }
