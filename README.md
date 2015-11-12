@@ -8,9 +8,9 @@ First, you need to clone the code into your local (or VM) machine as follows:
 
 Then compile the code:
 ```
-gcc ­c main.c ­o main.o 
-gcc ­c parser.c ­o parser.o
-gcc -­pthread parser.o main.o ­o matMultp
+gcc -c main.c -o main.o 
+gcc -c parser.c -o parser.o
+gcc -pthread parser.o main.o -o matMultp
 ```
 
 Then, run the program:
